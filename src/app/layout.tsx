@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { siteFont } from '@/fonts';
+import { ThemeProvider } from '@/features/theme/components/theme-provider';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -13,8 +14,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='en'>
-      <body className={`${siteFont.variable} antialiased`}>{children}</body>
+    <html lang='en' suppressHydrationWarning>
+      <body className={`${siteFont.variable} antialiased`}>
+        <ThemeProvider>{children}</ThemeProvider>
+      </body>
     </html>
   );
 }
