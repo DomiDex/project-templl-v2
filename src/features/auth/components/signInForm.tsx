@@ -8,9 +8,11 @@ import { GoogleIcon } from '@/components/icons/google';
 import Link from 'next/link';
 import { AuthError } from '../components/auth-error';
 import { signIn } from '../actions/sign-in';
+import { useAuthStore } from '../stores/useAuthStore';
 
 export default function SignInForm() {
   const router = useRouter();
+  const { signIn: storeSignIn } = useAuthStore();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -32,7 +34,14 @@ export default function SignInForm() {
         return;
       }
 
-      if (result.success) {
+      if (result.success && result.user) {
+        // Update Zustand store with user data
+        storeSignIn({
+          id: result.user.id,
+          email: result.user.email!,
+          profile_username: result.user.user_metadata?.profile_username,
+        });
+
         router.push(`/${result.redirectTo}`);
         router.refresh();
       }
