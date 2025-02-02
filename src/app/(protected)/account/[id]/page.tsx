@@ -1,5 +1,5 @@
-import React from 'react';
+import AccountHero from '@/features/account/components/AccountHero';
 
 export default function page() {
-  return <div>protected account page</div>;
+  return <AccountHero />;
 }
