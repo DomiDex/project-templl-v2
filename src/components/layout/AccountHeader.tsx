@@ -32,14 +32,17 @@ export default function AccountHeader() {
   }, [user?.id, supabase]);
 
   const accountNavigationItems: NavigationItem[] = [
-    { label: 'Dashboard', href: '/' },
-    { label: 'Profile', href: '/account/profile' },
+    {
+      label: 'Dashboard',
+      href: `/account/${user?.profile_username || user?.id}`,
+    },
+
     {
       label: 'Promote Yourself',
       items: [
         {
           label: 'Add a Template',
-          href: `/account/${username || user?.id}/add-templates`,
+          href: `/account/${user?.profile_username || user?.id}/add-templates`,
         },
         {
           label: 'Add Services',

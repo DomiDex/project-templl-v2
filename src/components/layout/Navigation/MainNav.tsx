@@ -24,25 +24,29 @@ export function MainNav({ items }: MainNavProps) {
 
   return (
     <div className='flex gap-6 md:gap-10'>
-      {items?.map((item, index) => {
-        if (item.items) {
+      <nav className='hidden lg:flex gap-6'>
+        {items?.map((item, index) => {
+          if (item.items) {
+            return (
+              <NavDropdown key={index} label={item.label} items={item.items} />
+            );
+          }
           return (
-            <NavDropdown key={index} label={item.label} items={item.items} />
+            <Link
+              key={index}
+              href={item.href!}
+              className={cn(
+                'flex items-center text-base font-medium transition-colors hover:text-foreground/80',
+                pathname === item.href
+                  ? 'text-foreground'
+                  : 'text-foreground/60'
+              )}
+            >
+              {item.label}
+            </Link>
           );
-        }
-        return (
-          <Link
-            key={index}
-            href={item.href!}
-            className={cn(
-              'flex items-center text-base font-medium transition-colors hover:text-foreground/80',
-              pathname === item.href ? 'text-foreground' : 'text-foreground/60'
-            )}
-          >
-            {item.label}
-          </Link>
-        );
-      })}
+        })}
+      </nav>
       <MobileNav items={items} />
     </div>
   );
