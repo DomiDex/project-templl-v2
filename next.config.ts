@@ -8,6 +8,9 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  images: {
+    domains: ['fdvyzzcnzlxebbtluysv.supabase.co'], // Replace with your Supabase project domain
+  },
 };
 
 export default nextConfig;

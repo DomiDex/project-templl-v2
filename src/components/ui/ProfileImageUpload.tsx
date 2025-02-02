@@ -1,9 +1,12 @@
+'use client';
+
 import { Camera } from 'lucide-react';
 import Image from 'next/image';
 import { createClient } from '@/utils/supabase/client';
 import { useAuthStore } from '@/features/auth/stores/useAuthStore';
 import { cn } from '@/lib/utils';
 import FormLabel from './FormLabel';
+import { toast } from 'sonner';
 
 interface ProfileImageUploadProps {
   imageUrl: string;
@@ -23,16 +26,26 @@ export default function ProfileImageUpload({
 
   const handleImageUpload = async (file: File) => {
     if (!user?.id) {
-      alert('Please sign in to upload images');
+      toast.error('Please sign in to upload images');
       return;
     }
 
     if (file.size > MAX_FILE_SIZE) {
-      alert('File size must be less than 300KB');
+      toast.error('File size must be less than 300KB');
       return;
     }
 
     try {
+      // Delete old image if exists
+      if (imageUrl) {
+        const oldPath = imageUrl.split('/').pop();
+        if (oldPath) {
+          await supabase.storage
+            .from('profile-images')
+            .remove([`${user.id}/${oldPath}`]);
+        }
+      }
+
       const fileExt = file.name.split('.').pop()?.toLowerCase();
       if (!fileExt || !['jpg', 'jpeg', 'png', 'webp'].includes(fileExt)) {
         throw new Error(
@@ -61,9 +74,10 @@ export default function ProfileImageUpload({
       } = supabase.storage.from('profile-images').getPublicUrl(filePath);
 
       onImageChange(publicUrl);
+      toast.success('Profile image updated successfully!');
     } catch (error) {
       console.error('Upload error:', error);
-      alert(
+      toast.error(
         error instanceof Error
           ? error.message
           : 'Error uploading image. Please try again.'
@@ -74,7 +88,7 @@ export default function ProfileImageUpload({
   return (
     <div className={cn('space-y-2', className)}>
       <FormLabel>Profile Picture</FormLabel>
-      <div className='flex items-center justify-center'>
+      <div className='flex items-left justify-left'>
         <div className='relative group'>
           <div
             className={cn(
@@ -89,6 +103,7 @@ export default function ProfileImageUpload({
                 alt='Profile picture'
                 fill
                 className='object-cover'
+                sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
               />
             ) : (
               <div className='w-full h-full bg-gray-200 dark:bg-gray-800' />
@@ -121,7 +136,7 @@ export default function ProfileImageUpload({
           </label>
         </div>
       </div>
-      <p className='text-xs text-center text-gray-500 dark:text-gray-400'>
+      <p className='text-xs  text-gray-500 dark:text-gray-400'>
         PNG, JPG or WebP (MAX. 300KB)
       </p>
     </div>

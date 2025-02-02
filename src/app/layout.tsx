@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { siteFont } from '@/fonts';
 import { ThemeProvider } from '@/features/theme/components/theme-provider';
+import ToastProvider from '@/components/providers/ToastProvider';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -16,7 +17,10 @@ export default function RootLayout({
   return (
     <html lang='en' suppressHydrationWarning>
       <body className={`${siteFont.variable} antialiased`}>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          {children}
+          <ToastProvider />
+        </ThemeProvider>
       </body>
     </html>
   );

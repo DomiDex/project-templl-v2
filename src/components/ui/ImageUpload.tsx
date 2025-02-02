@@ -1,8 +1,11 @@
+'use client';
+
 import { UploadCloud, X } from 'lucide-react';
 import Image from 'next/image';
 import { createClient } from '@/utils/supabase/client';
 import { useAuthStore } from '@/features/auth/stores/useAuthStore';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 interface ImageUploadProps {
   imageUrl: string;
@@ -28,52 +31,62 @@ export function ImageUpload({
 
   const handleImageUpload = async (file: File) => {
     if (!user?.id) {
-      alert('Please sign in to upload images');
+      toast.error('Authentication required', {
+        description: 'Please sign in to upload images',
+      });
       return;
     }
 
     if (file.size > MAX_FILE_SIZE) {
-      alert('File size must be less than 300KB');
+      toast.error('File too large', {
+        description: 'File size must be less than 300KB',
+      });
       return;
     }
 
-    try {
-      const fileExt = file.name.split('.').pop()?.toLowerCase();
-      if (!fileExt || !['jpg', 'jpeg', 'png', 'webp'].includes(fileExt)) {
-        throw new Error(
-          'Invalid file type. Please upload JPG, PNG, or WebP images only.'
-        );
+    const promise = new Promise(async (resolve, reject) => {
+      try {
+        const fileExt = file.name.split('.').pop()?.toLowerCase();
+        if (!fileExt || !['jpg', 'jpeg', 'png', 'webp'].includes(fileExt)) {
+          throw new Error(
+            'Invalid file type. Please upload JPG, PNG, or WebP images only.'
+          );
+        }
+
+        const fileName = `${Date.now()}-${Math.random()
+          .toString(36)
+          .substring(2)}.${fileExt}`;
+        const filePath = `${user.id}/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from(bucket)
+          .upload(filePath, file, {
+            cacheControl: '3600',
+            upsert: false,
+          });
+
+        if (uploadError) throw uploadError;
+
+        const {
+          data: { publicUrl },
+        } = supabase.storage.from(bucket).getPublicUrl(filePath);
+
+        onImageChange(publicUrl);
+        resolve('Image uploaded successfully');
+      } catch (error) {
+        reject(error);
       }
+    });
 
-      const fileName = `${Date.now()}-${Math.random()
-        .toString(36)
-        .substring(2)}.${fileExt}`;
-      const filePath = `${user.id}/${fileName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from(bucket)
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false,
-        });
-
-      if (uploadError) {
-        throw new Error('Failed to upload image: ' + uploadError.message);
-      }
-
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from(bucket).getPublicUrl(filePath);
-
-      onImageChange(publicUrl);
-    } catch (error) {
-      console.error('Upload error:', error);
-      alert(
-        error instanceof Error
+    toast.promise(promise, {
+      loading: 'Uploading image...',
+      success: 'Image uploaded successfully',
+      error: (error) => {
+        return error instanceof Error
           ? error.message
-          : 'Error uploading image. Please try again.'
-      );
-    }
+          : 'Error uploading image. Please try again.';
+      },
+    });
   };
 
   return (
