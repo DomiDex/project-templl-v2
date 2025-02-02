@@ -190,7 +190,11 @@ export default function ProfileForm() {
         </div>
       </div>
 
-      <Button type='submit' disabled={loading}>
+      <Button
+        type='submit'
+        disabled={loading}
+        className=' bg-purple-600 hover:bg-purple-700 text-white dark:bg-purple-500 dark:hover:bg-purple-400 dark:text-gray-50 transition-colors'
+      >
         {loading ? 'Updating...' : 'Update Profile'}
       </Button>
     </form>
