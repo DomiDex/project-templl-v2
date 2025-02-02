@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Container } from '@/components/ui/container';
 import { Section } from '@/components/ui/section';
-import SignInForm from '@/features/auth/component/signInForm';
+import SignInForm from '@/features/auth/components/signInForm';
 
 export default function Page() {
   return (

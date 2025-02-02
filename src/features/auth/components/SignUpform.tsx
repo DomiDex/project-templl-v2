@@ -5,39 +5,48 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { GoogleIcon } from '@/components/icons/google-icon';
-import Link from 'next/link';
 import { AuthError } from '../components/auth-error';
+import { signUp } from '../actions/sign-up';
+import { useAuthStore } from '../stores/useAuthStore';
 
 export default function SignUpForm() {
   const router = useRouter();
+  const setLoading = useAuthStore((state) => state.setLoading);
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLocalLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
-
+    setLocalLoading(true);
     setLoading(true);
 
     try {
-      // Add your sign-up logic here
-      console.log('Sign up:', { username, email, password });
-      // Simulate loading
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      router.push('/protected/account');
+      const result = await signUp({
+        username,
+        email,
+        password,
+        confirmPassword,
+      });
+
+      if (result.error) {
+        setError(result.error);
+        return;
+      }
+
+      if (result.success) {
+        router.push('/verify-email');
+        router.refresh();
+      }
     } catch (error) {
       setError('An unexpected error occurred');
       console.error('Sign up error:', error);
     } finally {
+      setLocalLoading(false);
       setLoading(false);
     }
   };
@@ -88,7 +97,7 @@ export default function SignUpForm() {
           <span className='w-full border-t border-gray-300 dark:border-gray-700' />
         </div>
         <div className='relative flex justify-center text-sm'>
-          <span className='px-2 bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-500'>
+          <span className='px-2 bg-gray-50 dark:bg-purple-800 text-gray-600 dark:text-gray-400'>
             Or continue with
           </span>
         </div>
@@ -101,7 +110,7 @@ export default function SignUpForm() {
         size='lg'
         disabled={loading}
         onClick={() => {
-          // Add Google sign-up logic here
+          // Will implement Google sign-up in a separate PR
           console.log('Google sign-up clicked');
         }}
       >
