@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { GoogleIcon } from '@/components/icons/google';
 import Link from 'next/link';
 import { AuthError } from '../components/auth-error';
+import { signIn } from '../actions/sign-in';
 
 export default function SignInForm() {
   const router = useRouter();
@@ -21,11 +22,20 @@ export default function SignInForm() {
     setLoading(true);
 
     try {
-      // Add your sign-in logic here
-      console.log('Sign in:', { email, password });
-      // Simulate loading
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      router.push('/protected/account');
+      const result = await signIn({
+        email,
+        password,
+      });
+
+      if (result.error) {
+        setError(result.error);
+        return;
+      }
+
+      if (result.success) {
+        router.push(`/${result.redirectTo}`);
+        router.refresh();
+      }
     } catch (error) {
       setError('An unexpected error occurred');
       console.error('Sign in error:', error);
