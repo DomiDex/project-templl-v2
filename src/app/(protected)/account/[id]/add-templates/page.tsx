@@ -5,8 +5,9 @@ import { Section } from '@/components/ui/section';
 export default function page() {
   const breadcrumbItems = [
     { label: 'Account', href: '/account' },
-    { label: 'Profile', href: '/account/profile' },
+    { label: 'Add Templates', href: '/account/add-templates' },
   ];
+
   return (
     <Section padding='lg'>
       <Container size='lg'>
@@ -14,7 +15,7 @@ export default function page() {
 
         <div className='max-w-2xl '>
           <h1 className='text-4xl font-bold text-gray-900 dark:text-gray-50 mb-8'>
-            Profile
+            Add Your Project
           </h1>
         </div>
       </Container>

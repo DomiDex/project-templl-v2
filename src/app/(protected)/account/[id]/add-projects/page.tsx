@@ -5,16 +5,16 @@ import { Section } from '@/components/ui/section';
 export default function page() {
   const breadcrumbItems = [
     { label: 'Account', href: '/account' },
-    { label: 'Profile', href: '/account/profile' },
+    { label: 'Add Project', href: '/account/add-project' },
   ];
+
   return (
     <Section padding='lg'>
       <Container size='lg'>
         <Breadcrumb items={breadcrumbItems} className='mb-6' />
-
         <div className='max-w-2xl '>
           <h1 className='text-4xl font-bold text-gray-900 dark:text-gray-50 mb-8'>
-            Profile
+            Add Your Project
           </h1>
         </div>
       </Container>

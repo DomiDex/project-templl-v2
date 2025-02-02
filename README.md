@@ -1,36 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## To Do List
 
-## Getting Started
+- [ ] Add a new project form
+- [ ] Add a new service form
+- [ ] Add a new template form
+- [ ] Add a new profile form
+- [ ] display new project, service, template in the account page
+- [ ] edit project, service, template in the account page
+- [ ] delete project, service, template in the account page
+- [ ] create all the main pages
 
-First, run the development server:
+## Database Types
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```typescript
+export type Profile = {
+  id: string;
+  username: string | null;
+  path: string | null;
+  description: string | null;
+  profile_image_url: string | null;
+  email: string | null;
+  phone: string | null;
+  website_url: string | null;
+  linkedin_url: string | null;
+  x_url: string | null;
+  github_url: string | null;
+  updated_at: string;
+  created_at: string;
+};
+
+export type Tables = {
+  profiles: {
+    Row: Profile;
+    Insert: Omit<Profile, 'created_at' | 'updated_at'>;
+    Update: Partial<Omit<Profile, 'id'>>;
+  };
+};
+
+export type DbResult<T> = T extends PromiseLike<infer U> ? U : never;
+export type DbResultOk<T> = T extends PromiseLike<{ data: infer U }>
+  ? Exclude<U, null>
+  : never;
+
+export type Schema = {
+  public: {
+    Tables: Tables;
+  };
+};
+
+export type SupabaseDatabase = SupabaseClient<Schema>;
+
+// Helper type for form inputs
+export type ProfileFormData = Omit<Profile, 'id' | 'created_at' | 'updated_at'>;
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
